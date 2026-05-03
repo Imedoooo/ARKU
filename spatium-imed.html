@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARKU — Imed Kchaou | Architecte & Urbaniste</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #b8975a;
+    --gold-light: #d4b07a;
+    --black: #0a0a0a;
+    --dark: #111111;
+    --mid: #1a1a1a;
+    --gray: #888888;
+    --light-gray: #cccccc;
+    --white: #f5f3ef;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CURSOR */
+  .cursor {
+    width: 10px; height: 10px;
+    background: var(--gold);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s, width 0.3s, height 0.3s, background 0.3s;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.15s ease-out, width 0.3s, height 0.3s, opacity 0.3s;
+    opacity: 0.6;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 28px 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    mix-blend-mode: normal;
+    transition: background 0.4s, padding 0.4s;
+  }
+  nav.scrolled {
+    background: rgba(10,10,10,0.95);
+    padding: 18px 50px;
+    border-bottom: 1px solid rgba(184,151,90,0.15);
+    backdrop-filter: blur(10px);
+  }
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 300;
+    letter-spacing: 0.4em;
+    color: var(--gold);
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+  .nav-logo span { color: var(--white); font-weight: 200; }
+  .nav-links {
+    display: flex; gap: 40px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--light-gray);
+    text-decoration: none;
+    transition: color 0.3s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute; bottom: -4px; left: 0;
+    width: 0; height: 1px;
+    background: var(--gold);
+    transition: width 0.4s ease;
+  }
+  .nav-links a:hover { color: var(--gold); }
+  .nav-links a:hover::after { width: 100%; }
+  .nav-ticket {
+    font-size: 0.65rem; letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--black);
+    background: var(--gold);
+    padding: 10px 22px;
+    text-decoration: none;
+    transition: background 0.3s;
+  }
+  .nav-ticket:hover { background: var(--gold-light); }
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: none; }
+  .hamburger span { width: 24px; height: 1px; background: var(--white); display: block; }
+
+  /* HERO */
+  #hero {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: 
+      linear-gradient(160deg, rgba(10,10,10,0.1) 0%, rgba(10,10,10,0.6) 60%, rgba(10,10,10,0.95) 100%),
+      url('https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1800&q=80') center/cover no-repeat;
+    transform: scale(1.05);
+    transition: transform 8s ease;
+  }
+  #hero.loaded .hero-bg { transform: scale(1); }
+  .hero-content {
+    position: relative; z-index: 2;
+    padding: 0 50px 80px;
+    max-width: 900px;
+  }
+  .hero-eyebrow {
+    font-size: 0.65rem; letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+    opacity: 0; animation: fadeUp 1s 0.3s forwards;
+  }
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3.5rem, 8vw, 7rem);
+    font-weight: 300;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: var(--white);
+    opacity: 0; animation: fadeUp 1s 0.6s forwards;
+  }
+  .hero-title em {
+    font-style: italic;
+    color: var(--gold);
+  }
+  .hero-sub {
+    margin-top: 30px;
+    font-size: 0.8rem; letter-spacing: 0.12em;
+    color: var(--light-gray);
+    line-height: 1.9;
+    max-width: 480px;
+    opacity: 0; animation: fadeUp 1s 0.9s forwards;
+  }
+  .hero-cta {
+    margin-top: 50px;
+    display: flex; gap: 20px; align-items: center;
+    opacity: 0; animation: fadeUp 1s 1.2s forwards;
+  }
+  .btn-primary {
+    font-size: 0.65rem; letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--black);
+    background: var(--gold);
+    padding: 14px 32px;
+    text-decoration: none;
+    transition: background 0.3s, transform 0.3s;
+  }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+  .btn-secondary {
+    font-size: 0.65rem; letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    text-decoration: none;
+    display: flex; align-items: center; gap: 10px;
+    transition: gap 0.3s;
+  }
+  .btn-secondary::after { content: '→'; }
+  .btn-secondary:hover { gap: 16px; }
+  .hero-scroll {
+    position: absolute;
+    bottom: 40px; right: 50px;
+    z-index: 2;
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    opacity: 0; animation: fadeIn 1s 1.8s forwards;
+  }
+  .hero-scroll span {
+    font-size: 0.6rem; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--gray); writing-mode: vertical-rl;
+  }
+  .scroll-line {
+    width: 1px; height: 60px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+    animation: scrollPulse 2s infinite;
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.4; transform: scaleY(1); }
+    50% { opacity: 1; transform: scaleY(1.2); }
+  }
+  .hero-lang {
+    position: absolute;
+    top: 40px; right: 50px; z-index: 2;
+    opacity: 0; animation: fadeIn 1s 1.5s forwards;
+    display: flex; gap: 12px;
+  }
+  .hero-lang a {
+    font-size: 0.65rem; letter-spacing: 0.15em;
+    color: var(--gray);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .hero-lang a.active { color: var(--gold); }
+  .hero-lang a:hover { color: var(--white); }
+
+  /* DIVIDER */
+  .divider {
+    width: 100%; height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+    opacity: 0.3;
+    margin: 0;
+  }
+
+  /* ABOUT SECTION */
+  #about {
+    padding: 130px 50px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .about-image-wrap {
+    position: relative;
+  }
+  .about-image-wrap::before {
+    content: '';
+    position: absolute;
+    top: -20px; left: -20px;
+    right: 20px; bottom: 20px;
+    border: 1px solid rgba(184,151,90,0.25);
+    z-index: 0;
+  }
+  .about-image {
+    width: 100%; aspect-ratio: 3/4;
+    object-fit: cover;
+    display: block;
+    position: relative; z-index: 1;
+    filter: grayscale(20%) contrast(1.1);
+  }
+  .about-text { padding-left: 20px; }
+  .section-label {
+    font-size: 0.6rem; letter-spacing: 0.4em;
+    text-transform: uppercase; color: var(--gold);
+    margin-bottom: 24px; display: block;
+  }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.2rem, 4vw, 3.5rem);
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--white);
+    margin-bottom: 30px;
+  }
+  .section-title em { font-style: italic; color: var(--gold); }
+  .about-text p {
+    font-size: 0.82rem;
+    line-height: 2;
+    color: var(--light-gray);
+    margin-bottom: 20px;
+  }
+  .about-stats {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 30px; margin-top: 50px;
+    padding-top: 40px;
+    border-top: 1px solid rgba(184,151,90,0.2);
+  }
+  .stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.8rem; font-weight: 300;
+    color: var(--gold); line-height: 1;
+  }
+  .stat-label {
+    font-size: 0.62rem; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--gray);
+    margin-top: 6px;
+  }
+
+  /* HIGHLIGHTS */
+  #highlights {
+    background: var(--dark);
+    padding: 130px 50px;
+  }
+  .highlights-header {
+    max-width: 1400px; margin: 0 auto 80px;
+    display: flex; justify-content: space-between; align-items: flex-end;
+  }
+  .highlights-grid {
+    max-width: 1400px; margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.3fr 1fr 1fr;
+    gap: 2px;
+  }
+  .highlight-card {
+    position: relative;
+    overflow: hidden;
+    cursor: none;
+  }
+  .highlight-card:first-child { grid-row: span 2; }
+  .card-img {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    display: block;
+    filter: grayscale(30%) brightness(0.85);
+    transition: filter 0.6s ease, transform 0.6s ease;
+  }
+  .highlight-card:first-child .card-img { aspect-ratio: 3/4; height: 100%; }
+  .highlight-card:hover .card-img {
+    filter: grayscale(0%) brightness(0.7);
+    transform: scale(1.04);
+  }
+  .card-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 50%);
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 30px;
+    transition: background 0.4s;
+  }
+  .highlight-card:hover .card-overlay {
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 100%);
+  }
+  .card-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.9rem; color: var(--gold);
+    letter-spacing: 0.2em; margin-bottom: 8px;
+  }
+  .card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem; font-weight: 400;
+    color: var(--white); line-height: 1.2;
+    margin-bottom: 10px;
+  }
+  .highlight-card:first-child .card-title { font-size: 2rem; }
+  .card-desc {
+    font-size: 0.72rem; line-height: 1.7; color: var(--light-gray);
+    opacity: 0; transform: translateY(10px);
+    transition: opacity 0.4s, transform 0.4s;
+  }
+  .highlight-card:hover .card-desc { opacity: 1; transform: translateY(0); }
+
+  /* OVERVIEW */
+  #overview {
+    padding: 130px 50px;
+    max-width: 1400px; margin: 0 auto;
+  }
+  .overview-inner {
+    display: grid; grid-template-columns: 1fr 1.5fr; gap: 100px;
+  }
+  .overview-left {}
+  .overview-right {}
+  .info-block { margin-bottom: 40px; }
+  .info-label {
+    font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 10px; display: block;
+  }
+  .info-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem; font-weight: 300; color: var(--white);
+    line-height: 1.5;
+  }
+  .info-value small {
+    display: block; font-family: 'Montserrat', sans-serif;
+    font-size: 0.7rem; color: var(--gray); letter-spacing: 0.08em; margin-top: 4px;
+  }
+  .price-table {
+    width: 100%; border-collapse: collapse; margin-top: 10px;
+  }
+  .price-table th {
+    font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gold); padding: 10px 0; text-align: left;
+    border-bottom: 1px solid rgba(184,151,90,0.3);
+  }
+  .price-table td {
+    font-size: 0.78rem; color: var(--light-gray);
+    padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .price-table td:last-child { color: var(--gold); }
+  .overview-image-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
+  }
+  .overview-image-grid img {
+    width: 100%; aspect-ratio: 1;
+    object-fit: cover;
+    filter: grayscale(20%) brightness(0.9);
+    transition: filter 0.4s;
+  }
+  .overview-image-grid img:hover { filter: grayscale(0%) brightness(1); }
+  .overview-image-grid img:first-child {
+    grid-column: span 2; aspect-ratio: 16/7;
+  }
+
+  /* PROJECTS STRIP */
+  #projects {
+    background: var(--mid);
+    padding: 100px 0;
+    overflow: hidden;
+  }
+  .projects-header {
+    padding: 0 50px 60px;
+    max-width: 1400px; margin: 0 auto;
+  }
+  .projects-track {
+    display: flex; gap: 2px;
+    width: max-content;
+    animation: marquee 30s linear infinite;
+  }
+  #projects:hover .projects-track { animation-play-state: paused; }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  .project-tile {
+    width: 340px; flex-shrink: 0;
+    position: relative; overflow: hidden; cursor: none;
+  }
+  .project-tile img {
+    width: 100%; height: 240px; object-fit: cover;
+    filter: grayscale(40%) brightness(0.8);
+    transition: filter 0.5s, transform 0.5s;
+    display: block;
+  }
+  .project-tile:hover img { filter: grayscale(0%) brightness(0.7); transform: scale(1.05); }
+  .project-tile-info {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 20px;
+    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+  }
+  .project-tile-year {
+    font-size: 0.6rem; letter-spacing: 0.25em; color: var(--gold); margin-bottom: 4px;
+  }
+  .project-tile-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem; color: var(--white);
+  }
+
+  /* ACCESS */
+  #access {
+    padding: 130px 50px;
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start;
+  }
+  .map-placeholder {
+    aspect-ratio: 4/3;
+    background: var(--dark);
+    position: relative; overflow: hidden;
+    border: 1px solid rgba(184,151,90,0.15);
+  }
+  .map-placeholder img {
+    width: 100%; height: 100%; object-fit: cover;
+    opacity: 0.6; filter: grayscale(60%) sepia(20%);
+  }
+  .map-overlay-label {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 12px;
+  }
+  .map-overlay-label span {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem; color: var(--gold);
+  }
+  .map-overlay-label small {
+    font-size: 0.65rem; letter-spacing: 0.15em; color: var(--light-gray);
+  }
+  .access-content {}
+  .access-list { list-style: none; margin-top: 30px; }
+  .access-list li {
+    display: flex; gap: 20px;
+    padding: 18px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-size: 0.78rem; color: var(--light-gray); line-height: 1.6;
+  }
+  .access-list li strong {
+    font-weight: 400; color: var(--gold);
+    min-width: 100px; font-size: 0.7rem; letter-spacing: 0.05em;
+  }
+  .map-link {
+    display: inline-flex; align-items: center; gap: 10px;
+    margin-top: 30px;
+    font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gold); text-decoration: none;
+    transition: gap 0.3s;
+  }
+  .map-link:hover { gap: 16px; }
+  .map-link::after { content: '→'; }
+
+  /* NOTICE */
+  #notice {
+    background: var(--dark);
+    padding: 100px 50px;
+    max-width: 1400px; margin: 0 auto;
+  }
+  .notice-list { list-style: none; margin-top: 40px; }
+  .notice-list li {
+    display: grid; grid-template-columns: 180px 1fr;
+    gap: 30px; padding: 24px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-size: 0.78rem;
+  }
+  .notice-date {
+    font-size: 0.65rem; letter-spacing: 0.15em;
+    color: var(--gold); align-self: start; padding-top: 2px;
+  }
+  .notice-text { color: var(--light-gray); line-height: 1.7; }
+
+  /* FOOTER */
+  footer {
+    padding: 80px 50px 40px;
+    border-top: 1px solid rgba(184,151,90,0.15);
+  }
+  .footer-top {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    max-width: 1400px; margin: 0 auto 60px;
+  }
+  .footer-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.5rem; font-weight: 300;
+    letter-spacing: 0.2em; color: var(--gold);
+  }
+  .footer-logo small {
+    display: block; font-family: 'Montserrat', sans-serif;
+    font-size: 0.6rem; letter-spacing: 0.4em; color: var(--gray);
+    text-transform: uppercase; margin-top: 6px;
+  }
+  .footer-nav { display: flex; gap: 60px; }
+  .footer-nav-col h5 {
+    font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 20px;
+  }
+  .footer-nav-col ul { list-style: none; }
+  .footer-nav-col li {
+    font-size: 0.73rem; color: var(--gray);
+    margin-bottom: 10px; line-height: 1.6;
+  }
+  .footer-nav-col a {
+    color: var(--gray); text-decoration: none;
+    transition: color 0.3s;
+  }
+  .footer-nav-col a:hover { color: var(--gold); }
+  .footer-bottom {
+    max-width: 1400px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
+    padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .footer-copy {
+    font-size: 0.65rem; letter-spacing: 0.1em; color: var(--gray);
+  }
+  .footer-social { display: flex; gap: 20px; }
+  .footer-social a {
+    font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gray); text-decoration: none; transition: color 0.3s;
+  }
+  .footer-social a:hover { color: var(--gold); }
+
+  /* GOLD LINE DECORATION */
+  .gold-line {
+    width: 60px; height: 1px; background: var(--gold);
+    margin-bottom: 24px;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  .reveal {
+    opacity: 0; transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  /* SECTION WRAPPER */
+  .section-wrap {
+    max-width: 1400px; margin: 0 auto;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 1024px) {
+    nav { padding: 22px 30px; }
+    .nav-links { gap: 24px; }
+    #about { grid-template-columns: 1fr; padding: 80px 30px; }
+    #highlights { padding: 80px 30px; }
+    .highlights-grid { grid-template-columns: 1fr 1fr; }
+    .highlight-card:first-child { grid-column: span 2; grid-row: unset; }
+    #overview { padding: 80px 30px; }
+    .overview-inner { grid-template-columns: 1fr; gap: 50px; }
+    #access { grid-template-columns: 1fr; padding: 80px 30px; }
+    footer { padding: 60px 30px 30px; }
+    .footer-top { flex-direction: column; gap: 40px; }
+    .footer-nav { flex-wrap: wrap; gap: 30px; }
+  }
+  @media (max-width: 768px) {
+    nav { padding: 18px 20px; }
+    nav.scrolled { padding: 14px 20px; }
+    .nav-links, .nav-ticket { display: none; }
+    .hamburger { display: flex; }
+    .hero-content { padding: 0 20px 60px; }
+    .hero-scroll { right: 20px; }
+    .hero-lang { top: 20px; right: 20px; }
+    #about, #overview, #access, #notice { padding: 60px 20px; }
+    #highlights { padding: 60px 0; }
+    .highlights-header { padding: 0 20px 40px; }
+    .highlights-grid { grid-template-columns: 1fr; }
+    .highlight-card:first-child { grid-column: span 1; }
+    .about-stats { grid-template-columns: repeat(3,1fr); }
+    footer { padding: 50px 20px 30px; }
+    .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">ARKU <span>Imed Kchaou</span></a>
+  <ul class="nav-links">
+    <li><a href="#about">À Propos</a></li>
+    <li><a href="#highlights">Réalisations</a></li>
+    <li><a href="#overview">Expertise</a></li>
+    <li><a href="#access">Contact</a></li>
+    <li><a href="#notice">Actualités</a></li>
+  </ul>
+  <a href="https://mail.google.com/mail/?view=cm&fs=1&to=imedsfax@gmail.com" target="_blank" class="nav-ticket">Contact</a>
+  <div class="hamburger">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg" id="heroBg"></div>
+  <div class="hero-lang">
+    <a href="#" class="active">FR</a>
+    <a href="#">EN</a>
+    <a href="#">AR</a>
+  </div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Architecte & Urbaniste — Sfax, Tunisie</p>
+    <h1 class="hero-title">
+      Imed<br>
+      <em>Kchaou</em>
+    </h1>
+    <p class="hero-sub">
+      Trente-deux ans d'une pratique dédiée à l'espace, à la ville et au territoire. 
+      De la conception architecturale à la planification urbaine, une vision cohérente 
+      portée par la rigueur et l'innovation.
+    </p>
+    <div class="hero-cta">
+      <a href="#highlights" class="btn-primary">Voir les Réalisations</a>
+      <a href="#about" class="btn-secondary">Découvrir ARKU</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span>Défiler</span>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-image-wrap reveal">
+    <img class="about-image" 
+      src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80" 
+      alt="Imed Kchaou — Architecte Urbaniste">
+  </div>
+  <div class="about-text">
+    <span class="section-label reveal">01 — À Propos</span>
+    <div class="gold-line reveal reveal-delay-1"></div>
+    <h2 class="section-title reveal reveal-delay-2">
+      Une vision<br>
+      <em>architecturale</em><br>
+      au service de la ville
+    </h2>
+    <p class="reveal reveal-delay-3">
+      Diplômé en architecture et urbanisme, Imed Kchaou a consacré plus de trois décennies 
+      à façonner le paysage urbain de Sfax et de sa région. Directeur de l'Urbanisme à la 
+      Municipalité de Sfax, il supervise les permis de construire, les plans d'aménagement 
+      et les opérations de lotissement.
+    </p>
+    <p class="reveal reveal-delay-3">
+      Spécialiste reconnu en SIG (ArcGIS, QGIS), formateur actif en méthodologies d'urbanisme 
+      et de géomatique, il dirige également son propre bureau d'études — <strong style="color:var(--gold)">ARKU</strong> — 
+      où architecture, urbanisme et innovation numérique se rencontrent.
+    </p>
+    <div class="about-stats">
+      <div class="reveal reveal-delay-1">
+        <div class="stat-num">32+</div>
+        <div class="stat-label">Années d'expérience</div>
+      </div>
+      <div class="reveal reveal-delay-2">
+        <div class="stat-num">500+</div>
+        <div class="stat-label">Projets réalisés</div>
+      </div>
+      <div class="reveal reveal-delay-3">
+        <div class="stat-num">3</div>
+        <div class="stat-label">Domaines d'expertise</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- HIGHLIGHTS -->
+<section id="highlights">
+  <div class="highlights-header section-wrap">
+    <div>
+      <span class="section-label reveal">02 — Réalisations</span>
+      <h2 class="section-title reveal reveal-delay-1" style="max-width:500px">
+        Des espaces<br><em>conçus pour durer</em>
+      </h2>
+    </div>
+    <p class="reveal" style="max-width:340px; font-size:0.78rem; color:var(--gray); line-height:2;">
+      De l'échelle de la pièce à celle du territoire, chaque projet est une réponse contextuelle, 
+      précise et poétique.
+    </p>
+  </div>
+  <div class="highlights-grid">
+    <div class="highlight-card reveal">
+      <img class="card-img" src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600&q=80" alt="Architecture résidentielle">
+      <div class="card-overlay">
+        <div class="card-num">01</div>
+        <div class="card-title">Art Urbain<br>de Sfax</div>
+        <div class="card-desc">Direction et supervision du Plan d'Aménagement Urbain, intégrant les nouvelles directives du RNU 2024 et les outils SIG de dernière génération.</div>
+      </div>
+    </div>
+    <div class="highlight-card reveal reveal-delay-1">
+      <img class="card-img" src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600&q=80" alt="Architecture résidentielle">
+      <div class="card-overlay">
+        <div class="card-num">02</div>
+        <div class="card-title">Résidences<br>Contemporaines</div>
+        <div class="card-desc">Conception de programmes résidentiels alliant modernité et tradition tunisienne, avec une attention particulière au confort bioclimatique.</div>
+      </div>
+    </div>
+    <div class="highlight-card reveal reveal-delay-2">
+      <img class="card-img" src="https://images.unsplash.com/photo-1449157291145-7efd050a4d0e?w=600&q=80" alt="Lotissements">
+      <div class="card-overlay">
+        <div class="card-num">03</div>
+        <div class="card-title">Opérations de<br>Lotissement</div>
+        <div class="card-desc">Gestion et conception de lotissements conformes au cadre réglementaire tunisien, avec intégration des outils numériques de suivi.</div>
+      </div>
+    </div>
+    <div class="highlight-card reveal reveal-delay-2">
+      <img class="card-img" src="https://images.unsplash.com/photo-1551632436-cbf8dd35adfa?w=600&q=80" alt="Formation GIS">
+      <div class="card-overlay">
+        <div class="card-num">04</div>
+        <div class="card-title">Formation SIG<br>& Géomatique</div>
+        <div class="card-desc">Programmes de formation ArcGIS et QGIS pour collectivités locales, bureaux d'études et professionnels de l'urbanisme.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS STRIP -->
+<section id="projects">
+  <div class="projects-header section-wrap">
+    <span class="section-label">— Projets en Images</span>
+  </div>
+  <div class="projects-track" id="track">
+    <!-- Duplicated for seamless loop -->
+    <div class="project-tile">
+      <img src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=400&q=70" alt="">
+      <div class="project-tile-info">
+        <div class="project-tile-year">2023</div>
+        <div class="project-tile-name">Centre Culturel Sfax</div>
+      </div>
+    </div>
+    <div class="project-tile">
+      <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&q=70" alt="">
+      <div class="project-tile-info">
+        <div class="project-tile-year">2022</div>
+        <div class="project-tile-name">Lotissement El Amal</div>
+      </div>
+    </div>
+    <div class="project-tile">
+      <img src="https://images.unsplash.com/photo-1470723710355-95304d8aece4?w=400&q=70" alt="">
+      <div class="project-tile-info">
+        <div class="project-tile-year">2021</div>
+        <div class="project-tile-name">Plan Directeur Régional</div>
+      </div>
+    </div>
+    <div class="project-tile">
+      <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&q=70" alt="">
+      <div class="project-tile-info">
+        <div class="project-tile-year">2020</div>
+        <div class="project-tile-name">Réhabilitation Médina</div>
+      </div>
+    </div>
+    <div class="project-tile">
+      <img src="https://images.unsplash.com/photo-1598928506311-c55ded91a20c?w=400&q=70" alt="">
+      <div class="project-tile-info">
+        <div class="project-tile-year">2019</div>
+        <div class="project-tile-name">Villa Contemporaine</div>
+      </div>
+    </div>
+    <div class="project-tile">
+      <img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=400&q=70" alt="">
+      <div class="project-tile-info">
+        <div class="project-tile-year">2018</div>
+        <div class="project-tile-name">Immeuble de Bureaux</div>
+      </div>
+    </div>
+    <!-- Duplicate -->
+    <div class="project-tile">
+      <img src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=400&q=70" alt="">
+      <div class="project-tile-info">
+        <div class="project-tile-year">2023</div>
+        <div class="project-tile-name">Centre Culturel Sfax</div>
+      </div>
+    </div>
+    <div class="project-tile">
+      <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&q=70" alt="">
+      <div class="project-tile-info">
+        <div class="project-tile-year">2022</div>
+        <div class="project-tile-name">Lotissement El Amal</div>
+      </div>
+    </div>
+    <div class="project-tile">
+      <img src="https://images.unsplash.com/photo-1470723710355-95304d8aece4?w=400&q=70" alt="">
+      <div class="project-tile-info">
+        <div class="project-tile-year">2021</div>
+        <div class="project-tile-name">Plan Directeur Régional</div>
+      </div>
+    </div>
+    <div class="project-tile">
+      <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&q=70" alt="">
+      <div class="project-tile-info">
+        <div class="project-tile-year">2020</div>
+        <div class="project-tile-name">Réhabilitation Médina</div>
+      </div>
+    </div>
+    <div class="project-tile">
+      <img src="https://images.unsplash.com/photo-1598928506311-c55ded91a20c?w=400&q=70" alt="">
+      <div class="project-tile-info">
+        <div class="project-tile-year">2019</div>
+        <div class="project-tile-name">Villa Contemporaine</div>
+      </div>
+    </div>
+    <div class="project-tile">
+      <img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=400&q=70" alt="">
+      <div class="project-tile-info">
+        <div class="project-tile-year">2018</div>
+        <div class="project-tile-name">Immeuble de Bureaux</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OVERVIEW / EXPERTISE -->
+<section id="overview" style="padding-top:130px;padding-bottom:130px;padding-left:50px;padding-right:50px;max-width:100%;">
+  <div class="section-wrap">
+    <span class="section-label reveal">03 — Expertise</span>
+    <div class="overview-inner">
+      <div class="overview-left">
+        <div class="gold-line reveal"></div>
+        <h2 class="section-title reveal">
+          Domaines<br>
+          <em>d'activité</em>
+        </h2>
+
+        <div class="info-block reveal reveal-delay-1">
+          <span class="info-label">Architecture</span>
+          <div class="info-value">
+            Conception et maîtrise d'œuvre
+            <small>Résidentiel · Tertiaire · Équipements publics</small>
+          </div>
+        </div>
+        <div class="info-block reveal reveal-delay-2">
+          <span class="info-label">Urbanisme</span>
+          <div class="info-value">
+            Planification & Permis de construire
+            <small>PAU · Lotissements · RNU 2024</small>
+          </div>
+        </div>
+        <div class="info-block reveal reveal-delay-3">
+          <span class="info-label">SIG & Géomatique</span>
+          <div class="info-value">
+            ArcGIS · QGIS · Applications Web
+            <small>Cartographie · Analyse spatiale · Formation</small>
+          </div>
+        </div>
+        <div class="info-block reveal reveal-delay-4">
+          <span class="info-label">Contact</span>
+          <div class="info-value">
+            Bureau ARKU — Route El Ain km 3  Sfax, Tunisie
+            <small>imedsfax@gmail.com</small>
+          </div>
+        </div>
+
+        <table class="price-table reveal">
+          <thead>
+            <tr>
+              <th>Prestation</th>
+              <th>Format</th>
+              <th>Délai</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Permis de Construire</td><td>Dossier complet</td><td>Selon projet</td></tr>
+            <tr><td>Plan de Lotissement</td><td>Étude réglementaire</td><td>4–8 semaines</td></tr>
+            <tr><td>Formation SIG</td><td>Présentiel / Online</td><td>2–5 jours</td></tr>
+            <tr><td>Consultation urbanisme</td><td>Sur rendez-vous</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="overview-right reveal reveal-delay-2">
+        <div class="overview-image-grid">
+          <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=70" alt="GIS mapping">
+          <img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=400&q=70" alt="Architecture plans">
+          <img src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=400&q=70" alt="Urban planning">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ACCESS -->
+<section id="access">
+  <div class="reveal">
+    <div class="map-placeholder">
+      <img src="https://images.unsplash.com/photo-1577086664693-894d8405334a?w=800&q=70" alt="Sfax map">
+      <div class="map-overlay-label">
+        <span>ARKU</span>
+        <small>Sfax, Tunisie</small>
+      </div>
+    </div>
+    <a href="https://maps.google.com" target="_blank" class="map-link" style="margin-top:16px;">
+      Ouvrir dans Google Maps
+    </a>
+  </div>
+  <div>
+    <span class="section-label reveal">04 — Contact & Accès</span>
+    <div class="gold-line reveal"></div>
+    <h2 class="section-title reveal">Rencontrons-<br><em>nous</em></h2>
+    <ul class="access-list">
+      <li class="reveal">
+        <strong>Adresse</strong>
+        Bureau ARKU<br> <a href="https://maps.app.goo.gl/jzJnkBnWjJHJUdKG8" target="_blank">فتح الخريطة</a> Sfax, Tunisie
+      </li>
+      <li class="reveal reveal-delay-1">
+        <strong>Téléphone</strong>
+        98973057 - 52973072
+      </li>
+      <li class="reveal reveal-delay-2">
+        <strong>Email</strong>
+        imedsfax@gmail.com
+      </li>
+      <li class="reveal reveal-delay-3">
+        <strong>Horaires</strong>
+        Lundi – Vendredi<br>08h30 – 17h30
+      </li>
+      <li class="reveal reveal-delay-4">
+        <strong>X</strong>
+        <a href="https://x.com/imedsfax" target="_blank">رابط X</a>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- NOTICE -->
+<section id="notice" style="padding-top:100px;padding-bottom:100px;padding-left:50px;padding-right:50px;max-width:100%;">
+  <div class="section-wrap">
+    <span class="section-label reveal">05 — Actualités</span>
+    <div class="gold-line reveal"></div>
+    <h2 class="section-title reveal">Dernières<br><em>nouvelles</em></h2>
+    <ul class="notice-list">
+      <li class="reveal">
+        <span class="notice-date">Mai 2026</span>
+        <span class="notice-text">Lancement de <strong style="color:var(--gold)">LotisPlan Tunisia</strong> — outil web de génération de plans de lotissement conforme au RNU 2024. Disponible en version bêta pour les bureaux d'études partenaires.</span>
+      </li>
+      <li class="reveal reveal-delay-1">
+        <span class="notice-date">Avril 2026</span>
+        <span class="notice-text">Formation SIG avancée (ArcGIS Pro) dispensée pour les ingénieurs de la Direction Régionale de l'Urbanisme de Sfax. 24 participants, 3 jours intensifs.</span>
+      </li>
+      <li class="reveal reveal-delay-2">
+        <span class="notice-date">Mars 2026</span>
+        <span class="notice-text">Publication d'une étude sur la numérisation des permis de construire dans les communes tunisiennes — contribution au colloque national sur la gouvernance urbaine.</span>
+      </li>
+      <li class="reveal reveal-delay-3">
+        <span class="notice-date">Janvier 2026</span>
+        <span class="notice-text">Déploiement du système de gestion des dossiers d'urbanisme à la Municipalité de Sfax — interface bilingue arabe/français avec tableaux de bord statistiques intégrés.</span>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-logo">
+        ARKU
+        <small>Architecte & Urbaniste — Sfax, Tunisie</small>
+      </div>
+    </div>
+    <div class="footer-nav">
+      <div class="footer-nav-col">
+        <h5>Navigation</h5>
+        <ul>
+          <li><a href="#about">À Propos</a></li>
+          <li><a href="#highlights">Réalisations</a></li>
+          <li><a href="#overview">Expertise</a></li>
+          <li><a href="#access">Contact</a></li>
+          <li><a href="#notice">Actualités</a></li>
+        </ul>
+      </div>
+      <div class="footer-nav-col">
+        <h5>Services</h5>
+        <ul>
+          <li>Architecture</li>
+          <li>Urbanisme</li>
+          <li>SIG & Géomatique</li>
+          <li>Formation</li>
+          <li>Conseil</li>
+        </ul>
+      </div>
+      <div class="footer-nav-col">
+        <h5>Contact</h5>
+        <ul>
+          <li>Sfax, Tunisie</li>
+          <li><a href="<a href="https://mail.google.com/mail/?view=cm&fs=1&to=imedsfax@gmail.com" class="nav-ticket">Contact</a>">imedsfax@gmail.com</a></li>
+          <li>98973057 - 52973072</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-copy">© 2026 ARKU — Imed Kchaou. Tous droits réservés.</p>
+    <div class="footer-social">
+      <a href="#">X</a>
+      <a href="#">Instagram</a>
+      <a href="#">ResearchGate</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Hero loaded
+  window.addEventListener('load', () => {
+    document.getElementById('hero').classList.add('loaded');
+  });
+
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top  = my + 'px';
+  });
+  function animateRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top  = ry + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+  document.querySelectorAll('a, button, .highlight-card, .project-tile').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.width = '18px'; cursor.style.height = '18px';
+      ring.style.width = '60px'; ring.style.height = '60px'; ring.style.opacity = '0.3';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.width = '10px'; cursor.style.height = '10px';
+      ring.style.width = '36px'; ring.style.height = '36px'; ring.style.opacity = '0.6';
+    });
+  });
+
+  // Navbar scroll
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 80);
+  });
+
+  // Reveal on scroll
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(el => io.observe(el));
+
+  // Smooth scroll for nav links
+  document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', e => {
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  });
+</script>
+</body>
+</html>
